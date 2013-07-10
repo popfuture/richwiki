@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="components/tinymce-release/tiny_mce.js"></script>
+  <script src="components/angular/angular.js"></script>
+  <script src="components/angular-ui-tinymce/src/tinymce.js"></script>
+</head>
+<body ng-app="RichWiki">
+  
+  <div ng-controller="EditPageCtrl">
+        <label>Title:</label>
+        <input type="text" ng-model="title" placeholder="Enter a title">
+        <button ng-click="savePage()">Save</button>
+        <button ng-click="loadPage()">Load</button>
+        <label>Content</label>
+        <h3>{{title}}</h3>
+        <div>{{html}}</div>
+    
+  <textarea id="tinymce" ui-tinymce ng-model="html"></textarea>
+
+  </div>
+    <script>
+    function EditPageCtrl($scope, $http) {
+        $scope.savePage = function() {
+                var data = {title:$scope.title, html:$scope.html};
+                $http.post('/page/'+$scope.title,data).success(
+                                function(data) {
+                                        console.log("ajax returned ", data);
+                                });
+                console.log($scope.title, $scope.html);
+        }
+        $scope.loadPage = function() {
+            $http.get('/page/'+$scope.title).success(
+                    function(data) {
+                    	$scope.html = data.html;
+
+                            console.log("ajax returned ", data);
+                    });
+    console.log($scope.title, $scope.html);        	
+        }
+    }
+
+    var myAppModule = angular.module('RichWiki', ['ui.tinymce'])
+  </script>
+  
+  <style>
+  	textarea {
+  	  width: 100%;
+  	  height: 10em;
+  	}
+  </style>
+  </body>
+</html>
